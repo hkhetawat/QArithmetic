@@ -36,7 +36,7 @@ def add(circ, a, b, c, n):
 # Adder that takes |a>|b>|0> to |a>|b>|a+b>.
 # |a> has length n.
 # |b> has length n.
-# |s> has length n+1.
+# |s> = |0> has length n+1.
 # |c> is an ancilla of all zeros of length n.
 def add_ex(circ, a, b, s, c, n):
     # Copy b to s.
@@ -64,3 +64,15 @@ def sub(circ, a, b, c, n):
     # Flip the carry to restore it to zero.
     circ.x(c[0])
 
+# Subtrator that takes |a>|b>|0> to |a>|b>|a-b>.
+# |a> has length n.
+# |b> has length n.
+# |s> = |0> has length n+1.
+# |c> is an ancilla of all zeros of length n.
+def sub_ex(circ, a, b, s, c, n):
+    # Copy b to s.
+    for i in range(0, n):
+        circ.cx(b[i],s[i])
+
+    # Subtract a and s.
+    sub(circ, a, s, c, n)

@@ -9,14 +9,12 @@ N = 4
 a = QuantumRegister(N)
 b = QuantumRegister(N)
 s = QuantumRegister(N+1)
-c = QuantumRegister(N)
 
 ca = ClassicalRegister(N)
 cb = ClassicalRegister(N)
 cs = ClassicalRegister(N+1)
-cc = ClassicalRegister(N)
 
-qc = QuantumCircuit(a, b, s, c, ca, cb, cs, cc)
+qc = QuantumCircuit(a, b, s, ca, cb, cs)
 
 
 # Input Superposition
@@ -29,12 +27,11 @@ qc.x(b[0])
 qc.x(b[1])
 qc.x(b[3])
 
-sub_ex(qc, a, b, s, c, N)
+sub_ex(qc, a, b, s, N)
 
 qc.measure(a, ca)
 qc.measure(b, cb)
 qc.measure(s, cs)
-qc.measure(c, cc)
 
 backend_sim = Aer.get_backend('qasm_simulator')
 job_sim = execute(qc, backend_sim)

@@ -1,4 +1,6 @@
+from math import pi
 from qiskit import QuantumRegister
+from qft import qft, iqft
 
 # Define a controlled Toffoli gate
 def cccx(circ,ctrl,a,b,c):
@@ -27,6 +29,7 @@ def carry_dg(circ, cin, a, b, cout):
 # Adder that takes |a>|b> to |a>|a+b>.
 # |a> has length n.
 # |b> has length n+1.
+# Based on Vedral, Barenco, and Ekert (1996).
 def add(circ, a, b, n):
     # Create a carry register of length n.
     c = QuantumRegister(n)
@@ -58,6 +61,24 @@ def add_ex(circ, a, b, s, n):
 
     # Add a and s.
     add(circ, a, s, n)
+
+# Draper adder that takes |a>|b> to |a>|a+b>.
+# |a> has length n.
+# |b> has length n+1.
+# https://arxiv.org/pdf/quant-ph/0008033.pdf
+def add_draper(circ, a, b, n):
+    # Take the QFT of "b."
+    qft(circ, b, n)
+
+    # Compute controlled-phases.
+    # Iterate through the targets.
+    for i in range(n,0,-1):
+        # Iterate through the controls.
+        for j in range(i,0,-1):
+            circ.cu1(2*pi/2**(i-j+1), b[j-1], a[i-1])
+
+    # Take the inverse QFT of "b."
+    iqft(circ, b, n)
 
 # Subtractor that takes |a>|b> to |a>|a-b>.
 # |a> has length n.
@@ -107,6 +128,6 @@ def sub_ex(circ, a, b, s, n):
 # Multiplier that takes |a>|b>|0> to |a>|b>|a*b>.
 # |a> has length n.
 # |b> has length n.
-# |s> = |0> has length n+1.
-# |c> is an ancilla of all zeros of length n.
-#def mult_ex(circ, a, b, s, c):
+# |s> = |0> has length 2n.
+#def mult_ex(circ, a, b, s):
+

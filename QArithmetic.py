@@ -13,8 +13,11 @@ def carry_dg(circ, cin, a, b, cout):
     circ.cx(a, b)
     circ.ccx(a, b, cout)
 
-# Define the adder that takes |a>|b> to |a>|s>.
-def n_adder(circ, a, b, c, n):
+# Adder that takes |a>|b> to |a>|a+b>.
+# |a> has length n.
+# |b> has length n+1.
+# |c> is an ancilla of all zeros of length n.
+def add(circ, a, b, c, n):
     # Calculate all the carries except the last one.
     for i in range(0, n-1):
         carry(circ, c[i], a[i], b[i], c[i+1])
@@ -30,11 +33,34 @@ def n_adder(circ, a, b, c, n):
         carry_dg(circ, c[i], a[i], b[i], c[i+1])
         sum(circ, c[i], a[i], b[i])
 
-# Define an adder that has a separate answer register "s."
-def n_adder_ex(circ, a, b, s, c, n):
+# Adder that takes |a>|b>|0> to |a>|b>|a+b>.
+# |a> has length n.
+# |b> has length n.
+# |s> has length n+1.
+# |c> is an ancilla of all zeros of length n.
+def add_ex(circ, a, b, s, c, n):
     # Copy b to s.
     for i in range(0, n):
         circ.cx(b[i],s[i])
 
     # Add a and s.
-    n_adder(circ, a, s, c, n)
+    add(circ, a, s, c, n)
+
+# Subtrator that takes |a>|b> to |a>|a-b>.
+# |a> has length n.
+# |b> has length n+1.
+# |c> is an ancilla of all zeros of length n.
+def sub(circ, a, b, c, n):
+    # We add "a" to the 2's complement of "b."
+    # First flip the bits of "b."
+    circ.x(b)
+
+    # Now carry in 1, so we're adding 1 to b, which negates it.
+    circ.x(c[0])
+
+    # Now add them.
+    add(circ, a, b, c, n)
+
+    # Flip the carry to restore it to zero.
+    circ.x(c[0])
+

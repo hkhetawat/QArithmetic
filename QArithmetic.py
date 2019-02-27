@@ -1,5 +1,14 @@
 from qiskit import QuantumRegister
 
+# Define a controlled Toffoli gate
+def cccx(circ,ctrl,a,b,c):
+    circ.reset(anc[0])
+    circ.ccx(ctrl,a,anc[0])
+    circ.ccx(b,anc[0],c)
+    circ.ccx(ctrl,a,anc[0])
+    circ.ccx(b,anc[0],c)
+
+
 # Define some functions for the adder.
 def sum(circ, cin, a, b):
     circ.cx(a,b)

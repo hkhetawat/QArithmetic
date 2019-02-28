@@ -49,8 +49,6 @@ def rshift(circ, a, n):
 def cccx(circ,ctrl,a,b,c):
     anc = QuantumRegister(1)
     circ.add_register(anc[0])
-    circ.reset(anc[0])
-    circ.reset(anc[0])
     circ.ccx(ctrl,a,anc[0])
     circ.ccx(b,anc[0],c)
     circ.ccx(ctrl,a,anc[0])

@@ -7,15 +7,15 @@ List of operations implemented:
 
 # Bit-wise operations
 
-Controlled Toffoli gate
+Controlled Toffoli gate 
 
-Logical AND
+Logical AND (qc, a, b, c, N);qc->quantum circuit, a->input1, b->input2, c->output, N->bit-string length
 
-Logical OR
+Logical OR (qc, a, b, c, N);qc->quantum circuit, a->input1, b->input2, c->output, N->bit-string length
 
-Logical XOR
+Logical XOR (qc, a, b, c, N);qc->quantum circuit, a->input1, b->input2, c->output, N->bit-string length
 
-Logical NOT
+Logical NOT (qc, a, c, N)
 
 Shift right
 

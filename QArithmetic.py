@@ -2,6 +2,46 @@ from math import pi
 from qiskit import QuantumRegister
 from qft import qft, iqft, cqft, ciqft, ccu1
 
+
+# shift right 
+# reg-> shift register
+# N->size of shift register
+# shift->shift amount
+def shr(circ,reg,N,shift):
+    for i in range (0,shift):
+        shr_helper(circ,reg,N,shift)
+
+def shr_helper(circ,reg,N,shift):
+    a = QuantumRegister(shift)
+    circ.add_register(a)
+    circ.reset(a)
+    for i in range (0,N-1):
+        circ.swap(reg[i], reg[i+1])
+    circ.swap(reg[N-1],a[0])
+    for ai in range (0,shift-1):
+        circ.swap(a[ai],a[ai+1])
+
+
+# shift left 
+# reg-> shift register
+# N->size of shift register
+# shift->shift amount
+def shl(circ,reg,N,shift):
+    for i in range (0,shift):
+        shr_helper(circ,reg,N,shift)
+
+def shl_helper(circ,reg,N,shift):
+    a = QuantumRegister(shift)
+    qc.add_register(a)
+    qc.reset(a)
+    for ai in range (shift,1,-1):
+        qc.swap(a[ai-1],a[ai-2])
+    qc.swap(a[0],reg[N-1])
+    for i in range (N,1,-1):
+        qc.swap(reg[i-1], reg[i-2])
+
+
+
 # Define a controlled Toffoli gate
 def cccx(circ,ctrl,a,b,c,anc):
     circ.reset(anc[0])

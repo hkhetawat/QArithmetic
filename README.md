@@ -48,7 +48,7 @@ QFT-based add (Draper adder)
 
 Ripple carry add
 
-> *Source*: Vedral, V., Barenco, A., & Ekert, A. (1996). Quantum networks for elementary arithmetic operations. Physical Review A, 54(1), 147.
+> *Source*: [Vedral, V., Barenco, A., & Ekert, A. (1996). Quantum networks for elementary arithmetic operations. Physical Review A, 54(1), 147](https://arxiv.org/abs/quant-ph/9511018).
 
 
 QFT-based sub

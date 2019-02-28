@@ -1,27 +1,7 @@
 # Import the Qiskit SDK
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from qiskit import execute, Aer
-
-
-def bitwise_and(qc, a, b, c, N):
-    for i in range(0, N):
-        qc.ccx(a[i], b[i], c[i])
-
-def bitwise_or(qc, a, b, c, N):
-    for i in range(0, N):
-        qc.ccx(a[i], b[i], c[i])
-        qc.cx(a[i], c[i])
-        qc.cx(b[i], c[i])
-
-def bitwise_xor(qc, a, b, c, N):
-    for i in range(0, N):
-        qc.cx(a[i], c[i])
-        qc.cx(b[i], c[i])
-
-def bitwise_not(qc, a, c, N):
-    for i in range(0, N):
-        qc.cx(a[i], c[i])
-        qc.x(c[i])
+from QArithmetic import bitwise_and, bitwise_or, bitwise_xor, bitwise_not
 
 # Input N
 N = 4

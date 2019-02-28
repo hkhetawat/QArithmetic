@@ -12,6 +12,7 @@ Controlled Toffoli gate (qc,ctrl,a,b,c)
 
     qc->quantum circuit, ctrl->control bit, a->toffoli control input1, b->toffoli control input2, c->target qubit
 
+
 > *Source*: [O. Scott, Nathan & Dueck, G.W.. (2008). Pairwise decomposition of toffoli gates in a quantum circuit. 231-236. 10.1145/1366110.1366168](https://www.researchgate.net/publication/220904774_Pairwise_decomposition_of_toffoli_gates_in_a_quantum_circuit). 
 
 Logical AND (qc, a, b, c, N)

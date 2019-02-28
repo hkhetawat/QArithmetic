@@ -48,10 +48,11 @@ def rshift(circ, a, n):
 # Define a controlled Toffoli gate
 def cccx(circ,ctrl,a,b,c):
     anc = QuantumRegister(1)
-    qc.ccx(ctrl,a,anc[0])
-    qc.ccx(b,anc[0],c)
-    qc.ccx(ctrl,a,anc[0])
-    qc.ccx(b,anc[0],c)
+    circ.add_register(anc[0])
+    circ.ccx(ctrl,a,anc[0])
+    circ.ccx(b,anc[0],c)
+    circ.ccx(ctrl,a,anc[0])
+    circ.ccx(b,anc[0],c)
 
 ################################################################################
 # Addition Circuits

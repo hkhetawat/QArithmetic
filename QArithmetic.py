@@ -2,6 +2,10 @@ from math import pi
 from qiskit import QuantumRegister
 from qft import qft, iqft, cqft, ciqft, ccu1
 
+################################################################################
+# Bitwise Operators
+################################################################################
+
 # bit-wise operations
 def bitwise_and(qc, a, b, c, N):
     for i in range(0, N):
@@ -23,57 +27,36 @@ def bitwise_not(qc, a, c, N):
         qc.cx(a[i], c[i])
         qc.x(c[i])
 
+# Cyclically left-shifts a binary string "a" of length n.
+# If "a" is zero-padded, equivalent to multiplying "a" by 2.
+def lshift(circ, a, n):
+    # Iterate through pairs and do swaps.
+    for i in range(n,1,-1):
+        circ.swap(a[i-1],a[i-2])
 
-# shift right 
-# reg-> shift register
-# N->size of shift register
-# shift->shift amount
-def shr(circ,reg,N,shift):
-    for i in range (0,shift):
-        shr_helper(circ,reg,N,shift)
+# Cyclically right-shifts a binary string "a" of length n.
+# If "a" is zero-padded, equivalent to dividing "a" by 2.
+def rshift(circ, a, n):
+    # Iterate through pairs and do swaps.
+    for i in range(n-1):
+        circ.swap(a[i],a[i+1])
 
-def shr_helper(circ,reg,N,shift):
-    a = QuantumRegister(shift)
-    circ.add_register(a)
-    circ.reset(a)
-    for i in range (0,N-1):
-        circ.swap(reg[i], reg[i+1])
-    circ.swap(reg[N-1],a[0])
-    for ai in range (0,shift-1):
-        circ.swap(a[ai],a[ai+1])
-
-
-# shift left 
-# reg-> shift register
-# N->size of shift register
-# shift->shift amount
-def shl(circ,reg,N,shift):
-    for i in range (0,shift):
-        shr_helper(circ,reg,N,shift)
-
-def shl_helper(circ,reg,N,shift):
-    a = QuantumRegister(shift)
-    qc.add_register(a)
-    qc.reset(a)
-    for ai in range (shift,1,-1):
-        qc.swap(a[ai-1],a[ai-2])
-    qc.swap(a[0],reg[N-1])
-    for i in range (N,1,-1):
-        qc.swap(reg[i-1], reg[i-2])
-
-
+################################################################################
+# Controlled-Toffoli, or Controlled-Controlled-Controlled-NOT
+################################################################################
 
 # Define a controlled Toffoli gate
 def cccx(circ,ctrl,a,b,c):
     anc = QuantumRegister(1)
     circ.add_register(anc[0])
-    circ.reset(anc[0])
-    circ.reset(anc[0])
     circ.ccx(ctrl,a,anc[0])
     circ.ccx(b,anc[0],c)
     circ.ccx(ctrl,a,anc[0])
     circ.ccx(b,anc[0],c)
 
+################################################################################
+# Addition Circuits
+################################################################################
 
 # Define some functions for the ripple adder.
 def sum(circ, cin, a, b):
@@ -162,6 +145,11 @@ def add_ripple_ex(circ, a, b, s, n):
     # Add a and s.
     add_ripple(circ, a, s, n)
 
+
+################################################################################
+# Subtraction Circuits
+################################################################################
+
 # Subtractor that takes |a>|b> to |a>|a-b>.
 # |a> has length n+1 (left padded with a zero).
 # |b> has length n+1 (left padded with a zero).
@@ -237,10 +225,57 @@ def sub_ripple_ex(circ, a, b, s, n):
     # Subtract a and s.
     sub_ripple(circ, a, s, n)
 
-# Cyclically left shifts a binary string "a" of length n.
-def lshift(circ, a, n):
-    for i in range(n,1,-1):
-        circ.swap(a[i-1],a[i-2])
+################################################################################
+# Multiplication Circuit
+################################################################################
+
+# Controlled operations
+
+def cccx(ctrl,a,b,c):
+    qc.ccx(ctrl,a,anc[0])
+    qc.ccx(b,anc[0],c)
+    qc.ccx(ctrl,a,anc[0])
+    qc.ccx(b,anc[0],c)
+
+def csum(circ, ctrl, cin, a, b):
+    circ.ccx(ctrl,a,b)
+    circ.ccx(ctrl,cin,b)
+
+def ccarry(circ, ctrl, cin, a, b, cout):
+    cccx(ctrl, a, b, cout)
+    circ.ccx(ctrl, a, b)
+    cccx(ctrl, cin, b, cout)
+
+def ccarry_dg(circ, ctrl, cin, a, b, cout):
+    cccx(ctrl, cin, b, cout)
+    circ.ccx(ctrl, a, b)
+    cccx(ctrl, a, b, cout)
+
+def c_adder(circ, ctrl, a, b, n):
+    for i in range(0, n-1):
+        ccarry(circ, ctrl, c[i], a[i], b[i], c[i+1])
+    ccarry(circ, ctrl, c[n-1], a[n-1], b[n-1], b[n])
+    
+    circ.ccx(ctrl, c[n-1],b[n-1])
+    
+    for i in range(n-2,-1,-1):
+        ccarry_dg(circ, ctrl, c[i], a[i], b[i], c[i+1])
+        csum(circ, ctrl, c[i], a[i], b[i])
+
+def sub_qr(qr, x, y):
+    sub = []
+    for i in range (x, y+1):
+        sub = sub + [(qr, i)]
+    return sub        
+
+
+def c_multiplier(circ, a, b, m, n):
+    for i in range (0, n):
+        c_adder(circ, a[i], b, sub_qr(m, i, n+i), n)
+
+################################################################################
+# Division Circuit
+################################################################################
 
 # Divider that takes |p>|d>|q>.
 # |p> is length 2n and has n zeros on the left: 0 ... 0 p_n ... p_1.

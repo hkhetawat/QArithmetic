@@ -43,6 +43,8 @@ qc->quantum circuit, reg->shift register, N->shift register bit-length, shift->s
 
 QFT-based add (Draper adder)
 
+> *Source*: Khosropour, A., Aghababa, H., & Forouzandeh, B. (2011). Quantum Division Circuit Based on Restoring Division Algorithm. 2011 Eighth International Conference on Information Technology: New Generations. doi:10.1109/itng.2011.177 
+
 
 Ripple carry add
 

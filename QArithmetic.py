@@ -81,7 +81,7 @@ def add_ripple_ex(circ, a, b, s, n):
     # Add a and s.
     add_ripple(circ, a, s, n)
 
-# Subtractor that takes |a>|b> to |a>|a+b>.
+# Subtractor that takes |a>|b> to |a>|a-b>.
 # |a> has length n+1 (left padded with a zero).
 # |b> has length n+1 (left padded with a zero).
 def sub(circ, a, b, n):

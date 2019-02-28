@@ -5,7 +5,6 @@ from qiskit import execute, Aer
 # Controlled operations
 
 def cccx(ctrl,a,b,c):
-    qc.reset(anc[0])
     qc.ccx(ctrl,a,anc[0])
     qc.ccx(b,anc[0],c)
     qc.ccx(ctrl,a,anc[0])
@@ -26,8 +25,6 @@ def ccarry_dg(circ, ctrl, cin, a, b, cout):
     cccx(ctrl, a, b, cout)
 
 def c_adder(circ, ctrl, a, b, n):
-    c = QuantumRegister(n)
-    circ.add_register(c)
     for i in range(0, n-1):
         ccarry(circ, ctrl, c[i], a[i], b[i], c[i+1])
     ccarry(circ, ctrl, c[n-1], a[n-1], b[n-1], b[n])
@@ -53,7 +50,7 @@ def c_multiplier(circ, a, b, m, n):
 
 
 # Input N
-N = 2
+N = 3
 
 a = QuantumRegister(N)
 b = QuantumRegister(N)
@@ -63,13 +60,17 @@ anc = QuantumRegister(1)
 cm = ClassicalRegister(2*N)
 
 qc = QuantumCircuit(a, b, m, anc, cm)
+c = QuantumRegister(N)
+qc.add_register(c)
 
 # Input
 # a =  3
 qc.x(a[0])
+qc.x(a[2])
 qc.x(a[1])
 # b = 3
 qc.x(b[0])
+qc.x(b[2])
 qc.x(b[1])
 
 c_multiplier(qc, a, b, m, N)

@@ -1,34 +1,27 @@
 # Import the Qiskit SDK
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from qiskit import execute, Aer
-from QArithmetic import add_draper
+from QArithmetic import qft, iqft
 
 # Input N
 N = 4
 
-a = QuantumRegister(N+1)
-b = QuantumRegister(N+1)
+a = QuantumRegister(N)
 
-ca = ClassicalRegister(N+1)
-cb = ClassicalRegister(N+1)
+ca = ClassicalRegister(N)
 
-qc = QuantumCircuit(a, b, ca, cb)
+qc = QuantumCircuit(a, ca)
 
 
 # Input Superposition
-# a =  01110
+# a =  0110
 qc.x(a[1])
 qc.x(a[2])
-qc.x(a[3])
-# b = 01011
-qc.x(b[0])
-qc.x(b[1])
-qc.x(b[3])
 
-add_draper(qc, a, b, N+1)
+qft(qc, a, N)
+iqft(qc, a, N)
 
 qc.measure(a, ca)
-qc.measure(b, cb)
 
 backend_sim = Aer.get_backend('qasm_simulator')
 job_sim = execute(qc, backend_sim)

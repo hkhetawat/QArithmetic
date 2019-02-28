@@ -54,11 +54,11 @@ def add_ex(circ, a, b, s, n):
     add(circ, a, s, n)
 
 # Draper adder that takes |a>|b> to |a>|a+b>.
-# |a> has length n.
-# |b> has length n+1.
+# |a> has length n+1 (left padded with a zero).
+# |b> has length n+1 (left padded with a zero).
 # https://arxiv.org/pdf/quant-ph/0008033.pdf
 def add_draper(circ, a, b, n):
-    # Take the QFT of "b."
+    # Take the QFT.
     qft(circ, b, n)
 
     # Compute controlled-phases.
@@ -66,9 +66,9 @@ def add_draper(circ, a, b, n):
     for i in range(n,0,-1):
         # Iterate through the controls.
         for j in range(i,0,-1):
-            circ.cu1(2*pi/2**(i-j+1), b[j-1], a[i-1])
+            circ.cu1(2*pi/2**(i-j+1), a[j-1], b[i-1])
 
-    # Take the inverse QFT of "b."
+    # Take the inverse QFT.
     iqft(circ, b, n)
 
 # Subtractor that takes |a>|b> to |a>|a-b>.

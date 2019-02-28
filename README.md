@@ -8,23 +8,34 @@ List of operations implemented:
 
 # Bit-wise operations
 
-Controlled Toffoli gate 
+Controlled Toffoli gate (qc,ctrl,a,b,c)
 
-Source: O. Scott, Nathan & Dueck, G.W.. (2008). Pairwise decomposition of toffoli gates in a quantum circuit. 231-236. 10.1145/1366110.1366168. 
+qc->quantum circuit, ctrl->control bit, a->toffoli control input 1, b->toffoli control input 2, c->target qubit
 
+Logical AND (qc, a, b, c, N)
 
-Logical AND (qc, a, b, c, N);qc->quantum circuit, a->input1, b->input2, c->output, N->bit-string length
+qc->quantum circuit, a->input1, b->input2, c->output, N->bit-string length
 
+Logical OR (qc, a, b, c, N)
 
-Logical OR (qc, a, b, c, N);qc->quantum circuit, a->input1, b->input2, c->output, N->bit-string length
+qc->quantum circuit, a->input1, b->input2, c->output, N->bit-string length
 
-Logical XOR (qc, a, b, c, N);qc->quantum circuit, a->input1, b->input2, c->output, N->bit-string length
+Logical XOR (qc, a, b, c, N)
+
+qc->quantum circuit, a->input1, b->input2, c->output, N->bit-string length
 
 Logical NOT (qc, a, c, N)
 
-Shift right
+qc->quantum circuit, a->input, c->output, N->bit-string length
 
-Shift left
+Shift right (qc,reg,N,shift)
+
+qc->quantum circuit, reg->shift register, N->shift register bit-length, shift->shift amount
+
+Shift left (qc,reg,N,shift)
+
+qc->quantum circuit, reg->shift register, N->shift register bit-length, shift->shift amount
+
 
 # Arithmetic operations
 

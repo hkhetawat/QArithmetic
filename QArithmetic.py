@@ -2,6 +2,27 @@ from math import pi
 from qiskit import QuantumRegister
 from qft import qft, iqft, cqft, ciqft, ccu1
 
+# bit-wise operations
+def bitwise_and(qc, a, b, c, N):
+    for i in range(0, N):
+        qc.ccx(a[i], b[i], c[i])
+
+def bitwise_or(qc, a, b, c, N):
+    for i in range(0, N):
+        qc.ccx(a[i], b[i], c[i])
+        qc.cx(a[i], c[i])
+        qc.cx(b[i], c[i])
+
+def bitwise_xor(qc, a, b, c, N):
+    for i in range(0, N):
+        qc.cx(a[i], c[i])
+        qc.cx(b[i], c[i])
+
+def bitwise_not(qc, a, c, N):
+    for i in range(0, N):
+        qc.cx(a[i], c[i])
+        qc.x(c[i])
+
 
 # shift right 
 # reg-> shift register
@@ -43,7 +64,10 @@ def shl_helper(circ,reg,N,shift):
 
 
 # Define a controlled Toffoli gate
-def cccx(circ,ctrl,a,b,c,anc):
+def cccx(circ,ctrl,a,b,c):
+    anc = QuantumRegister(1)
+    circ.add_register(anc[0])
+    circ.reset(anc[0])
     circ.reset(anc[0])
     circ.ccx(ctrl,a,anc[0])
     circ.ccx(b,anc[0],c)

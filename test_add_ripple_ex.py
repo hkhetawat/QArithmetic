@@ -1,7 +1,7 @@
 # Import the Qiskit SDK
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from qiskit import execute, Aer
-from QArithmetic import add_ex
+from QArithmetic import add_ripple_ex
 
 # Input N
 N = 4
@@ -27,7 +27,7 @@ qc.x(b[0])
 qc.x(b[1])
 qc.x(b[3])
 
-add_ex(qc, a, b, s, N)
+add_ripple_ex(qc, a, b, s, N)
 
 qc.measure(a, ca)
 qc.measure(b, cb)

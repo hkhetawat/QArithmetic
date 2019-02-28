@@ -6,17 +6,17 @@ from QArithmetic import add
 # Input N
 N = 4
 
-a = QuantumRegister(N)
+a = QuantumRegister(N+1)
 b = QuantumRegister(N+1)
 
-ca = ClassicalRegister(N)
+ca = ClassicalRegister(N+1)
 cb = ClassicalRegister(N+1)
 
 qc = QuantumCircuit(a, b, ca, cb)
 
 
 # Input Superposition
-# a =  1110
+# a =  01110
 qc.x(a[1])
 qc.x(a[2])
 qc.x(a[3])
@@ -25,7 +25,7 @@ qc.x(b[0])
 qc.x(b[1])
 qc.x(b[3])
 
-add(qc, a, b, N)
+add(qc, a, b, N+1)
 
 qc.measure(a, ca)
 qc.measure(b, cb)

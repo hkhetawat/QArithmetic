@@ -19,7 +19,7 @@ Logical NOT
 
 Shift right
 
-shift left
+Shift left
 
 # Arithmetic operations
 

@@ -2,6 +2,27 @@ from math import pi
 from qiskit import QuantumRegister
 from qft import qft, iqft, cqft, ciqft, ccu1
 
+# bit-wise operations
+def bitwise_and(qc, a, b, c, N):
+    for i in range(0, N):
+        qc.ccx(a[i], b[i], c[i])
+
+def bitwise_or(qc, a, b, c, N):
+    for i in range(0, N):
+        qc.ccx(a[i], b[i], c[i])
+        qc.cx(a[i], c[i])
+        qc.cx(b[i], c[i])
+
+def bitwise_xor(qc, a, b, c, N):
+    for i in range(0, N):
+        qc.cx(a[i], c[i])
+        qc.cx(b[i], c[i])
+
+def bitwise_not(qc, a, c, N):
+    for i in range(0, N):
+        qc.cx(a[i], c[i])
+        qc.x(c[i])
+
 
 # shift right 
 # reg-> shift register

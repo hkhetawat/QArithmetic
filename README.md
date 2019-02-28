@@ -6,7 +6,7 @@ This is our great, awesome, extremely impressive, daunting, inspiring arithmetic
 List of operations implemented:
 
 
-# Bit-wise operations
+## Bit-wise operations
 
 Controlled Toffoli gate (qc,ctrl,a,b,c)
 
@@ -39,7 +39,7 @@ Shift left (qc,reg,N,shift)
     qc->quantum circuit, reg->shift register, N->shift register bit-length, shift->shift amount
 
 
-# Arithmetic operations
+## Arithmetic operations
 
 QFT-based add (Draper adder)
 
@@ -55,9 +55,7 @@ QFT-based sub
 
 Ripple carry sub
 
-> *The subtracters are based on using the adders together with the subtraction/bit negation equivalence.*
-
-> *Source*: Draper, T. G., Kutin, S. A., Rains, E. M., & Svore, K. M. (2004). A logarithmic-depth quantum carry-lookahead adder. arXiv preprint quant-ph/0406142.
+> *The subtracters are based on using the adders together with the subtraction/bit negation equivalence.* *Source*: Draper, T. G., Kutin, S. A., Rains, E. M., & Svore, K. M. (2004). A logarithmic-depth quantum carry-lookahead adder. arXiv preprint quant-ph/0406142.
 
 
 Sub-and-swap

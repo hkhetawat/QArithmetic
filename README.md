@@ -54,10 +54,15 @@ List of operations implemented:
 
 #### QFT-based sub
 
+Uses the QFT-based adder and the fact that
+
+    a - b = ~(~a + b)
+
 #### Ripple carry sub
 
-> *The subtracters are based on using the adders together with the subtraction/bit negation equivalence.* *Source*: [Draper, T. G., Kutin, S. A., Rains, E. M., & Svore, K. M. (2004). A logarithmic-depth quantum carry-lookahead adder. arXiv preprint quant-ph/04061420](https://www.researchgate.net/publication/2193063_A_logarithmic-depth_quantum_carry-lookahead_adder).
+Uses the ripple-carry adder and the fact that
 
+    a - b = ~(~a + b)
 
 #### Multiply
 

@@ -1,5 +1,5 @@
 from math import pi
-from qiskit import QuantumRegister
+from qiskit import QuantumRegister, QuantumCircuit
 from qft import qft, iqft, cqft, ciqft, ccu1
 
 ################################################################################
@@ -248,6 +248,16 @@ def full_qr(qr):
 def mult(circ, a, b, c, n):
     for i in range (0, n):
         cadd(circ, a[i], b, sub_qr(c, i, n+i), n)
+
+def cmult(circ, control, a, b, c, n):
+    qa = QuantumRegister(len(a))
+    qb = QuantumRegister(len(b))
+    qc = QuantumRegister(len(c))
+    tempCircuit = QuantumCircuit(qa, qb, qc)
+    mult(tempCircuit, qa, qb, qc, n)
+    tempCircuit = tempCircuit.control(1) #Add Decomposition after pull request inclusion #5446 on terra
+    print("Remember To Decompose after release >0.16.1")
+    circ.compose(tempCircuit, qubits=full_qr(control) + full_qr(a) + full_qr(b) + full_qr(c), inplace=True)
 
 ################################################################################
 # Division Circuit

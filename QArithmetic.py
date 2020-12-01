@@ -235,7 +235,7 @@ def sub_ripple_ex(circ, a, b, s, n):
 def sub_qr(qr, x, y):
     sub = []
     for i in range (x, y+1):
-        sub = sub + [(qr, i)]
+        sub = sub + [(qr[i])] # I think this was supposed to point to specific qubits
     return sub
 
 # Computes the product c=a*b.

@@ -238,6 +238,9 @@ def sub_qr(qr, x, y):
         sub = sub + [(qr[i])] # I think this was supposed to point to specific qubits
     return sub
 
+def full_qr(qr):
+    return sub_qr(qr, 0, len(qr) - 1)
+
 # Computes the product c=a*b.
 # a has length n.
 # b has length n.

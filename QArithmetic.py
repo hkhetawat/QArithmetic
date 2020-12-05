@@ -289,3 +289,62 @@ def div(circ, p, d, q, n):
         circ.x(q[i-1])
         cadd(circ, q[i-1], d, p, 2*n)
         circ.x(q[i-1])
+
+################################################################################
+# Expontential Circuit
+################################################################################
+
+# a has length n
+# b has length x
+# c has length n*2^(x-1), for safety
+def reversible_pow(circ, a, b, finalOut): #Because this is reversible/gate friendly memory blooms to say the least
+    # Track Number of Qubits
+    n = len(a)
+
+    # left 0 pad a
+    pad = AncillaRegister(len(finalOut) - n) # Unsure of where to use these
+    circ.add_register(pad)
+    padList = full_qr(pad)
+    aList = full_qr(a)
+    # padList.reverse()
+    # aList.reverse()
+    a = aList + padList
+    
+
+    #Start d at 1
+    d = AncillaRegister(n) # Unsure of where to use these
+    circ.add_register(d)
+    # for i in range(0, n):
+    #     circ.cx(a[i],d[i])
+    circ.x(d[0])
+
+    ancOut = AncillaRegister(2 * n) # Unsure of where to use these
+    circ.add_register(ancOut)
+    
+    # iterate through every qubit of b
+    for i in range(0,len(b)): # for every bit of b 
+        for j in range(pow(2, i)):
+            # run multiplication operation if and only if b is 1
+            cmult(circ, [b[i]], a[0:len(d)], d, ancOut, n)
+
+            # if the multiplication was not run copy the qubits so they are not destroyed when creating new register
+            circ.x(b[i])
+            for qub in range(0,len(d)):
+                circ.ccx(b[i], d[qub], ancOut[qub])
+            circ.x(b[i])
+
+            # Move the output to the input for next function and double the qubit length
+            n *= 2
+            d = ancOut
+
+            # if i == len(b) - 1 and (j == pow(2, i - 1) - 2 or j == pow(2, i - 1) - 1):
+            #     # create a new output register of twice the length and register it
+            #     ancOut = AncillaRegister(2 * n) # Unsure of where to use these
+            #     circ.add_register(ancOut)
+            if i == len(b) - 1 and j == pow(2, i) - 2:
+                # this is the last step send qubiits to output
+                ancOut = finalOut
+            elif not (i == len(b) - 1 and j == pow(2, i) - 1):
+                # create a new output register of twice the length and register it
+                ancOut = AncillaRegister(2 * n) # Unsure of where to use these
+                circ.add_register(ancOut)

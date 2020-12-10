@@ -2,14 +2,11 @@
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from qiskit import execute, Aer
 from qiskit.providers.aer import QasmSimulator
-from QArithmetic import reversible_pow
-
-from qiskit.tools.visualization import circuit_drawer
-import matplotlib.pyplot as plt
+from QArithmetic import power
 
 # Input N
 N = 2
-X = 2 # keep this to two
+X = 2 # qc will take exponentially longer to compile with each increase
 
 a = QuantumRegister(N)
 b = QuantumRegister(X)
@@ -27,18 +24,16 @@ qc.x(a[1])
 qc.x(b[0])
 qc.x(b[1])
 
-reversible_pow(qc, a, b, m)
+power(qc, a, b, m)
 
 qc.measure(m, cm)
-# circuit_drawer(qc, output="mpl", interactive=True, scale=1.0, filename='test', fold=-1).show()
-# circuit_drawer(qc, output="text", interactive=True, scale=1.0, filename='test3', fold=-1)
 
-# backend_sim = Aer.get_backend('unitary_simulator')
-# backend_sim = StatevectorSimulator(precision='single', method="automatic", max_memory_mb=12288)
-backend_sim = QasmSimulator(method='matrix_product_state', precision='single')
+# Only 2 qubuts ^ 2 qubits would use 2^48Bytes~35TB in a statevector
+# Thus MPS must be used here and if not configured correctly it may act unexpectedly
+backend_sim = QasmSimulator(method='matrix_product_state')
 print("started job")
-job_sim = execute(qc, backend_sim, shots=1024)
-# job_sim.wait_for_final_state(wait=5)
+
+job_sim = execute(qc, backend_sim, shots=20)
 result_sim = job_sim.result()
 
 print(result_sim.get_counts(qc))

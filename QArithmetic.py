@@ -297,28 +297,25 @@ def div(circ, p, d, q, n):
 # a has length n
 # b has length x
 # c has length n*2^(x-1), for safety
-def reversible_pow(circ, a, b, finalOut): #Because this is reversible/gate friendly memory blooms to say the least
+def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memory blooms to say the least
     # Track Number of Qubits
     n = len(a)
 
-    # left 0 pad a
-    pad = AncillaRegister(len(finalOut) - n) # Unsure of where to use these
+    # left 0 pad a, to satisfy multiplication function arguments
+    pad = AncillaRegister(len(finalOut) - n) # Unsure of where to Anciallas these
     circ.add_register(pad)
     padList = full_qr(pad)
     aList = full_qr(a)
-    # padList.reverse()
-    # aList.reverse()
     a = aList + padList
     
 
-    #Start d at 1
-    d = AncillaRegister(n) # Unsure of where to use these
+    # Create a register d for mults and init with state 1
+    d = AncillaRegister(n) # Unsure of where to Anciallas these
     circ.add_register(d)
-    # for i in range(0, n):
-    #     circ.cx(a[i],d[i])
     circ.x(d[0])
 
-    ancOut = AncillaRegister(2 * n) # Unsure of where to use these
+    # Create a register for tracking the output of cmult to the end
+    ancOut = AncillaRegister(2 * n) # Unsure of where to Anciallas these
     circ.add_register(ancOut)
     
     # iterate through every qubit of b
@@ -337,14 +334,11 @@ def reversible_pow(circ, a, b, finalOut): #Because this is reversible/gate frien
             n *= 2
             d = ancOut
 
-            # if i == len(b) - 1 and (j == pow(2, i - 1) - 2 or j == pow(2, i - 1) - 1):
-            #     # create a new output register of twice the length and register it
-            #     ancOut = AncillaRegister(2 * n) # Unsure of where to use these
-            #     circ.add_register(ancOut)
             if i == len(b) - 1 and j == pow(2, i) - 2:
-                # this is the last step send qubiits to output
+                # this is the second to last step send qubiits to output
                 ancOut = finalOut
             elif not (i == len(b) - 1 and j == pow(2, i) - 1):
+                # if this is not the very last step
                 # create a new output register of twice the length and register it
                 ancOut = AncillaRegister(2 * n) # Unsure of where to use these
                 circ.add_register(ancOut)

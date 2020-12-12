@@ -17,10 +17,10 @@ cm = ClassicalRegister(N*(pow(2,X+1)))
 qc = QuantumCircuit(a, b, m, cm)
 
 # Input
-# a = 010 = 2
+# a = 11 = 3
 qc.x(a[0])
 qc.x(a[1])
-# b= 010 = 2
+# b= 11 = 3
 qc.x(b[0])
 qc.x(b[1])
 
@@ -37,4 +37,3 @@ job_sim = execute(qc, backend_sim, shots=20)
 result_sim = job_sim.result()
 
 print(result_sim.get_counts(qc))
-# print(result_sim)

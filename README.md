@@ -64,7 +64,7 @@ Uses the ripple-carry adder and the fact that
 
     a - b = ~(~a + b)
 
-#### Multiply
+#### Multiply & Controlled Multiply
 
 > *Source*: [Nguyen, A. Q. (2004). TR-2004010: Optimal Reversible Quantum Circuit for Multiplication](https://pdfs.semanticscholar.org/9c3e/9f842537c1375ba80412b42f3e8868ebd2ba.pdf).
 
@@ -73,3 +73,8 @@ Uses the ripple-carry adder and the fact that
 
 > *Source*: [Khosropour, A., Aghababa, H., & Forouzandeh, B. (2011). Quantum Division Circuit Based on Restoring Division Algorithm. 2011 Eighth International Conference on Information Technology: New Generations. doi:10.1109/itng.2011.177](https://www.researchgate.net/publication/220840968_Quantum_Division_Circuit_Based_on_Restoring_Division_Algorithm)
 
+#### Power (qc, a, b, c)
+
+Uses the QFT-adder based cmult and the fact that
+
+  a ^ b = a<sub>0</sub> * a<sub>1</sub> * .... * a<sub>b-2</sub> * a<sub>b-1</sub>

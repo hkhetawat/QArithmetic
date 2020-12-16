@@ -305,7 +305,9 @@ def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memor
     # My proof is based paritally on the following https://math.stackexchange.com/questions/1884992/number-of-digits-in-the-square-root-of-a-perfect-square
     sigDigs = n*(pow(2,len(b))-1)
 
-    recyclableBits = n*(pow(2,len(b)+1))
+    permaZeros = n*(pow(2,len(b)+1)) - sigDigs
+    recyclableBits = AncillaRegister(permaZeros)
+    circ.add_register(recyclableBits)
 
     # left 0 pad a, to satisfy multiplication function arguments
     pad = AncillaRegister(len(finalOut) - n) # Unsure of where to Anciallas these

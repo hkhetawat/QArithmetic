@@ -296,10 +296,16 @@ def div(circ, p, d, q, n):
 
 # a has length n
 # b has length x
-# c has length n*2^(x-1), for safety
+# finalOut has length n*((2^x)-1), for safety
 def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memory blooms to say the least
     # Track Number of Qubits
     n = len(a)
+
+    # The max number of significant digits will be the number of binary digits of the base times the maximum value of the exponent, the max digits could be one less than this value in some cases
+    # My proof is based paritally on the following https://math.stackexchange.com/questions/1884992/number-of-digits-in-the-square-root-of-a-perfect-square
+    sigDigs = n*(pow(2,len(b))-1)
+
+    recyclableBits = n*(pow(2,len(b)+1))
 
     # left 0 pad a, to satisfy multiplication function arguments
     pad = AncillaRegister(len(finalOut) - n) # Unsure of where to Anciallas these

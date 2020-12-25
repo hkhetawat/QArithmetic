@@ -249,6 +249,11 @@ def mult(circ, a, b, c, n):
     for i in range (0, n):
         cadd(circ, a[i], b, sub_qr(c, i, n+i), n)
 
+# Computes the product c=a*b if and only if control.
+# a has length n.
+# b has length n.
+# control has length 1.
+# c has length 2n.
 def cmult(circ, control, a, b, c, n):
     qa = QuantumRegister(len(a))
     qb = QuantumRegister(len(b))

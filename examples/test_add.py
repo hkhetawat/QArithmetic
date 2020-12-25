@@ -6,10 +6,10 @@ from QArithmetic import add
 # Input N
 N = 4
 
-a = QuantumRegister(N+1)
+a = QuantumRegister(N)
 b = QuantumRegister(N+1)
 
-ca = ClassicalRegister(N+1)
+ca = ClassicalRegister(N)
 cb = ClassicalRegister(N+1)
 
 qc = QuantumCircuit(a, b, ca, cb)
@@ -25,7 +25,7 @@ qc.x(b[0])
 qc.x(b[1])
 qc.x(b[3])
 
-add(qc, a, b, N+1)
+add(qc, a, b, N)
 
 qc.measure(a, ca)
 qc.measure(b, cb)

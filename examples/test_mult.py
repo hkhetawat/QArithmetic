@@ -4,7 +4,7 @@ from qiskit import execute, Aer
 from QArithmetic import mult
 
 # Input N
-N = 3
+N = 2
 
 a = QuantumRegister(N)
 b = QuantumRegister(N)
@@ -16,6 +16,7 @@ qc = QuantumCircuit(a, b, m, cm)
 
 # Input
 # a = 010 = 2
+qc.x(a[0])
 qc.x(a[1])
 # b = 011 = 3
 qc.x(b[0])

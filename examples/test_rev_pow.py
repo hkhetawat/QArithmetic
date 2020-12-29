@@ -46,7 +46,8 @@ backend_sim = provider.backends.ibmq_qasm_simulator
 # backend_sim = QasmSimulator(method='extended_stabilizer',precision="single", max_memory_mb=int(pow(2,33.5)))
 print("started job")
 
-job_sim = execute(qc, backend_sim, shots=20)
+job_sim = execute(qc, backend_sim, shots=1)
 result_sim = job_sim.result()
 
 print(result_sim.get_counts(qc))
+print()

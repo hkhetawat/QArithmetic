@@ -327,7 +327,7 @@ def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memor
     recyclableBits = full_qr(recyclableBits)
 
     # Left 0 pad a, to satisfy multiplication function arguments
-    aPad = AncillaRegister(n*(len(b))) # Unsure of where to Anciallas these
+    aPad = AncillaRegister(n*(len(b)) - len(a)) # Unsure of where to Anciallas these
     circ.add_register(aPad)
     padAList = full_qr(aPad)
     aList = full_qr(a)
@@ -339,7 +339,7 @@ def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memor
     circ.x(d[0])
 
     # Create a register for tracking the output of cmult to the end
-    ancOut = AncillaRegister(2 * n) # Unsure of where to Anciallas these
+    ancOut = AncillaRegister(n) # Unsure of where to Anciallas these
     circ.add_register(ancOut)
 
     # Left 0 pad finalOut to provide safety to the final multiplication
@@ -353,7 +353,8 @@ def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memor
     for i in range(0,len(b)): # for every bit of b 
         for j in range(pow(2, i)):
             # run multiplication operation if and only if b is 1
-            cmult(circ, [b[i]], a[:len(d)+1], d, full_qr(ancOut) + recyclableBits, len(d))
+            supplement = len(d)*2 - len(ancOut)
+            cmult(circ, [b[i]], a[:len(d)], d, full_qr(ancOut) + recyclableBits[:supplement], len(d))
 
             # if the multiplication was not run copy the qubits so they are not destroyed when creating new register
             circ.x(b[i])

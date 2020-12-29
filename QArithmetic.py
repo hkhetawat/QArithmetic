@@ -310,24 +310,15 @@ def div(circ, p, d, q, n):
 ################################################################################
 
 # a has length n
-# b has length x
-# finalOut has length n*((2^x)-1), for safety
+# b has length v
+# finalOut has length n*((2^v)-1), for safety
 def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memory blooms to say the least
     # Track Number of Qubits
     n = len(a)
-
-    # The max number of significant digits will be the number of binary digits of the base times the maximum value of the exponent, the max digits could be one less than this value in some cases
-    # My proof is based paritally on the following https://math.stackexchange.com/questions/1884992/number-of-digits-in-the-square-root-of-a-perfect-square
-    sigDigs = n*(pow(2,len(b))-1)
-
-    # permaZeros = n*(pow(2,len(b)+1)) - sigDigs
-    permaZeros = n
-    recyclableBits = AncillaRegister(permaZeros)
-    circ.add_register(recyclableBits)
-    recyclableBits = full_qr(recyclableBits)
+    v = len(b)
 
     # Left 0 pad a, to satisfy multiplication function arguments
-    aPad = AncillaRegister(n*(len(b)) - len(a)) # Unsure of where to Anciallas these
+    aPad = AncillaRegister(n*v - len(a)) # Unsure of where to Anciallas these
     circ.add_register(aPad)
     padAList = full_qr(aPad)
     aList = full_qr(a)
@@ -336,10 +327,9 @@ def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memor
     # Create a register d for mults and init with state 1
     d = AncillaRegister(n) # Unsure of where to Anciallas these
     circ.add_register(d)
-    circ.x(d[0])
 
     # Create a register for tracking the output of cmult to the end
-    ancOut = AncillaRegister(n) # Unsure of where to Anciallas these
+    ancOut = AncillaRegister(n*2) # Unsure of where to Anciallas these
     circ.add_register(ancOut)
 
     # Left 0 pad finalOut to provide safety to the final multiplication
@@ -348,13 +338,19 @@ def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memor
     padFoList = full_qr(foPad)
     foList = full_qr(finalOut)
     finalOut = foList + padFoList
+
+    if v >= 1:
+        for i in range(n):
+            circ.ccx(b[0], a[i], d[i])
+        circ.x(b[0])
+        circ.cx(b[0], a[0])
+        circ.x(b[0])
     
     # iterate through every qubit of b
-    for i in range(0,len(b)): # for every bit of b 
+    for i in range(1,v): # for every bit of b 
         for j in range(pow(2, i)):
             # run multiplication operation if and only if b is 1
-            supplement = len(d)*2 - len(ancOut)
-            cmult(circ, [b[i]], a[:len(d)], d, full_qr(ancOut) + recyclableBits[:supplement], len(d))
+            cmult(circ, [b[i]], a[:len(d)], d, full_qr(ancOut), len(d))
 
             # if the multiplication was not run copy the qubits so they are not destroyed when creating new register
             circ.x(b[i])
@@ -365,10 +361,10 @@ def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memor
             # Move the output to the input for next function and double the qubit length
             d = ancOut
 
-            if i == len(b) - 1 and j == pow(2, i) - 2:
+            if i == v - 1 and j == pow(2, i) - 2:
                 # this is the second to last step send qubiits to output
                 ancOut = finalOut
-            elif not (i == len(b) - 1 and j == pow(2, i) - 1):
+            elif not (i == v - 1 and j == pow(2, i) - 1):
                 # if this is not the very last step
                 # create a new output register of twice the length and register it
                 ancOut = AncillaRegister(len(d) + n) # Should label permazero bits

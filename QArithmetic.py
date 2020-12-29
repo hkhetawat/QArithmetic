@@ -74,10 +74,13 @@ def carry_dg(circ, cin, a, b, cout):
     circ.ccx(a, b, cout)
 
 # Draper adder that takes |a>|b> to |a>|a+b>.
-# |a> has length n+1 (left padded with a zero).
+# |a> has length x and is less than or equal to n
 # |b> has length n+1 (left padded with a zero).
 # https://arxiv.org/pdf/quant-ph/0008033.pdf
 def add(circ, a, b, n):
+    # move n forward by one to account for overflow
+    n += 1
+
     # Take the QFT.
     qft(circ, b, n)
 
@@ -86,16 +89,21 @@ def add(circ, a, b, n):
     for i in range(n,0,-1):
         # Iterate through the controls.
         for j in range(i,0,-1):
-            circ.cu1(2*pi/2**(i-j+1), a[j-1], b[i-1])
+            # If the qubit a[j-1] exists run ccu, if not assume the qubit is 0 and never existed
+            if len(a) - 1 >= j - 1:
+                circ.cu1(2*pi/2**(i-j+1), a[j-1], b[i-1])
 
     # Take the inverse QFT.
     iqft(circ, b, n)
 
 # Draper adder that takes |a>|b> to |a>|a+b>, controlled on |c>.
-# |a> has length n+1 (left padded with a zero).
+# |a> has length x and is less than or equal to n
 # |b> has length n+1 (left padded with a zero).
 # |c> is a single qubit that's the control.
 def cadd(circ, c, a, b, n):
+    # move n forward by one to account for overflow
+    n += 1
+
     # Take the QFT.
     cqft(circ, c, b, n)
 
@@ -104,7 +112,9 @@ def cadd(circ, c, a, b, n):
     for i in range(n,0,-1):
         # Iterate through the controls.
         for j in range(i,0,-1):
-            ccu1(circ, 2*pi/2**(i-j+1), c, a[j-1], b[i-1])
+            # If the qubit a[j-1] exists run ccu, if not assume the qubit is 0 and never existed
+            if len(a) - 1 >= j - 1:
+                ccu1(circ, 2*pi/2**(i-j+1), c, a[j-1], b[i-1])
 
     # Take the inverse QFT.
     ciqft(circ, c, b, n)
@@ -249,6 +259,11 @@ def mult(circ, a, b, c, n):
     for i in range (0, n):
         cadd(circ, a[i], b, sub_qr(c, i, n+i), n)
 
+# Computes the product c=a*b if and only if control.
+# a has length n.
+# b has length n.
+# control has length 1.
+# c has length 2n.
 def cmult(circ, control, a, b, c, n):
     qa = QuantumRegister(len(a))
     qb = QuantumRegister(len(b))

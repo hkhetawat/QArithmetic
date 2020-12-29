@@ -6,11 +6,11 @@ from QArithmetic import cadd
 # Input N
 N = 4
 
-a = QuantumRegister(N+1)
+a = QuantumRegister(N)
 b = QuantumRegister(N+1)
 c = QuantumRegister(1)
 
-ca = ClassicalRegister(N+1)
+ca = ClassicalRegister(N)
 cb = ClassicalRegister(N+1)
 cc = ClassicalRegister(1)
 
@@ -27,9 +27,9 @@ qc.x(b[0])
 qc.x(b[1])
 qc.x(b[3])
 # c = 0
-#qc.x(c)
+# qc.x(c)
 
-cadd(qc, c, a, b, N+1)
+cadd(qc, c, a, b, N)
 
 qc.measure(a, ca)
 qc.measure(b, cb)

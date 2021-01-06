@@ -318,7 +318,7 @@ def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memor
     v = len(b)
 
     # Left 0 pad a, to satisfy multiplication function arguments
-    aPad = AncillaRegister(n*v - len(a)) # Unsure of where to Anciallas these
+    aPad = AncillaRegister(n * (pow(2, v) - 3)) # Unsure of where to Anciallas these
     circ.add_register(aPad)
     padAList = full_qr(aPad)
     aList = full_qr(a)
@@ -333,24 +333,35 @@ def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memor
     circ.add_register(ancOut)
 
     # Left 0 pad finalOut to provide safety to the final multiplication
-    foPad = AncillaRegister((len(a) * 2) - len(finalOut))
-    circ.add_register(foPad)
-    padFoList = full_qr(foPad)
-    foList = full_qr(finalOut)
-    finalOut = foList + padFoList
+    if (len(a) * 2) - len(finalOut) > 0:
+        foPad = AncillaRegister((len(a) * 2) - len(finalOut))
+        circ.add_register(foPad)
+        padFoList = full_qr(foPad)
+        foList = full_qr(finalOut)
+        finalOut = foList + padFoList
+    
+    # Create zero bits
+    num_recycle = (2 * n * (pow(2, v) - 2)) - (n * pow(2, v)) # 24
+    permaZeros = []
+    if num_recycle > 0:
+        permaZeros = AncillaRegister(num_recycle) #8
+        circ.add_register(permaZeros)
+        permaZeros = full_qr(permaZeros)
 
+    # Instead of MULT copy bits over
     if v >= 1:
         for i in range(n):
             circ.ccx(b[0], a[i], d[i])
         circ.x(b[0])
-        circ.cx(b[0], a[0])
+        circ.cx(b[0], d[0])
         circ.x(b[0])
     
     # iterate through every qubit of b
     for i in range(1,v): # for every bit of b 
         for j in range(pow(2, i)):
             # run multiplication operation if and only if b is 1
-            cmult(circ, [b[i]], a[:len(d)], d, full_qr(ancOut), len(d))
+            bonus = permaZeros[:2*len(d) - len(ancOut)]
+            cmult(circ, [b[i]], a[:len(d)], d, full_qr(ancOut) + bonus, len(d))
 
             # if the multiplication was not run copy the qubits so they are not destroyed when creating new register
             circ.x(b[i])

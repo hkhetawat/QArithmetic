@@ -168,7 +168,7 @@ def sub(circ, a, b, n):
     circ.x(a)
 
     # Add it to b.
-    add(circ, a, b, n)
+    add(circ, a, b, n - 1)
 
     # Flip the bits of the result. This yields the sum.
     circ.x(b)
@@ -184,7 +184,7 @@ def sub_swap(circ, a, b, n):
     circ.x(a)
 
     # Add it to b.
-    add(circ, b, a, n)
+    add(circ, b, a, n - 1)
 
     # Flip the bits of the result. This yields the sum.
     circ.x(a)
@@ -302,7 +302,7 @@ def div(circ, p, d, q, n):
         # If |p> is negative, indicated by the (i-1)th bit of |q> being 0, add D back
         # to P.
         circ.x(q[i-1])
-        cadd(circ, q[i-1], d, p, 2*n)
+        cadd(circ, q[i-1], d, p, 2*n - 1)
         circ.x(q[i-1])
 
 ################################################################################
@@ -310,34 +310,58 @@ def div(circ, p, d, q, n):
 ################################################################################
 
 # a has length n
-# b has length x
-# c has length n*2^(x-1), for safety
+# b has length v
+# finalOut has length n*((2^v)-1), for safety
 def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memory blooms to say the least
     # Track Number of Qubits
     n = len(a)
+    v = len(b)
 
-    # left 0 pad a, to satisfy multiplication function arguments
-    pad = AncillaRegister(len(finalOut) - n) # Unsure of where to Anciallas these
-    circ.add_register(pad)
-    padList = full_qr(pad)
+    # Left 0 pad a, to satisfy multiplication function arguments
+    aPad = AncillaRegister(n * (pow(2, v) - 3)) # Unsure of where to Anciallas these
+    circ.add_register(aPad)
+    padAList = full_qr(aPad)
     aList = full_qr(a)
-    a = aList + padList
-    
+    a = aList + padAList
 
     # Create a register d for mults and init with state 1
     d = AncillaRegister(n) # Unsure of where to Anciallas these
     circ.add_register(d)
-    circ.x(d[0])
 
     # Create a register for tracking the output of cmult to the end
-    ancOut = AncillaRegister(2 * n) # Unsure of where to Anciallas these
+    ancOut = AncillaRegister(n*2) # Unsure of where to Anciallas these
     circ.add_register(ancOut)
+
+    # Left 0 pad finalOut to provide safety to the final multiplication
+    if (len(a) * 2) - len(finalOut) > 0:
+        foPad = AncillaRegister((len(a) * 2) - len(finalOut))
+        circ.add_register(foPad)
+        padFoList = full_qr(foPad)
+        foList = full_qr(finalOut)
+        finalOut = foList + padFoList
+    
+    # Create zero bits
+    num_recycle = (2 * n * (pow(2, v) - 2)) - (n * pow(2, v)) # 24
+    permaZeros = []
+    if num_recycle > 0:
+        permaZeros = AncillaRegister(num_recycle) #8
+        circ.add_register(permaZeros)
+        permaZeros = full_qr(permaZeros)
+
+    # Instead of MULT copy bits over
+    if v >= 1:
+        for i in range(n):
+            circ.ccx(b[0], a[i], d[i])
+        circ.x(b[0])
+        circ.cx(b[0], d[0])
+        circ.x(b[0])
     
     # iterate through every qubit of b
-    for i in range(0,len(b)): # for every bit of b 
+    for i in range(1,v): # for every bit of b 
         for j in range(pow(2, i)):
             # run multiplication operation if and only if b is 1
-            cmult(circ, [b[i]], a[0:len(d)], d, ancOut, n)
+            bonus = permaZeros[:2*len(d) - len(ancOut)]
+            cmult(circ, [b[i]], a[:len(d)], d, full_qr(ancOut) + bonus, len(d))
 
             # if the multiplication was not run copy the qubits so they are not destroyed when creating new register
             circ.x(b[i])
@@ -346,14 +370,13 @@ def power(circ, a, b, finalOut): #Because this is reversible/gate friendly memor
             circ.x(b[i])
 
             # Move the output to the input for next function and double the qubit length
-            n *= 2
             d = ancOut
 
-            if i == len(b) - 1 and j == pow(2, i) - 2:
+            if i == v - 1 and j == pow(2, i) - 2:
                 # this is the second to last step send qubiits to output
                 ancOut = finalOut
-            elif not (i == len(b) - 1 and j == pow(2, i) - 1):
+            elif not (i == v - 1 and j == pow(2, i) - 1):
                 # if this is not the very last step
                 # create a new output register of twice the length and register it
-                ancOut = AncillaRegister(2 * n) # Unsure of where to use these
+                ancOut = AncillaRegister(len(d) + n) # Should label permazero bits
                 circ.add_register(ancOut)

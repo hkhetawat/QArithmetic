@@ -1,8 +1,12 @@
 # Import the Qiskit SDK
+from numpy.lib.function_base import copy
 from qiskit import QuantumCircuit, ClassicalRegister, QuantumRegister
 from qiskit import execute, Aer
 from qiskit.providers.aer import QasmSimulator
-from QArithmetic import power
+from QArithmetic import full_qr, power
+from copy import copy
+
+from qiskit.tools.visualization import circuit_drawer
 
 # Input N
 N = 2
@@ -10,11 +14,12 @@ X = 2 # qc will take exponentially longer to compile with each increase
 
 a = QuantumRegister(N)
 b = QuantumRegister(X)
-m = QuantumRegister(N*(pow(2,X+1)))
+m = QuantumRegister(N*(pow(2,X)-1))
 
-cm = ClassicalRegister(N*(pow(2,X+1)))
+ca = ClassicalRegister(N)
+cm = ClassicalRegister(N*(pow(2,X)-1))
 
-qc = QuantumCircuit(a, b, m, cm)
+qc = QuantumCircuit(a, b, m, cm, ca)
 
 # Input
 # a = 11 = 3
@@ -27,13 +32,12 @@ qc.x(b[1])
 power(qc, a, b, m)
 
 qc.measure(m, cm)
+qc.measure(a, ca)
 
-# Only 2 qubuts ^ 2 qubits would use 2^48Bytes~35TB in a statevector
-# Thus MPS must be used here and if not configured correctly it may act unexpectedly
-backend_sim = QasmSimulator(method='matrix_product_state')
+backend_sim = Aer.get_backend('qasm_simulator')
 print("started job")
 
-job_sim = execute(qc, backend_sim, shots=20)
+job_sim = execute(qc, backend_sim, shots=1)
 result_sim = job_sim.result()
 
 print(result_sim.get_counts(qc))

@@ -168,7 +168,7 @@ def sub(circ, a, b, n):
     circ.x(a)
 
     # Add it to b.
-    add(circ, a, b, n)
+    add(circ, a, b, n - 1)
 
     # Flip the bits of the result. This yields the sum.
     circ.x(b)
@@ -184,7 +184,7 @@ def sub_swap(circ, a, b, n):
     circ.x(a)
 
     # Add it to b.
-    add(circ, b, a, n)
+    add(circ, b, a, n - 1)
 
     # Flip the bits of the result. This yields the sum.
     circ.x(a)
@@ -302,7 +302,7 @@ def div(circ, p, d, q, n):
         # If |p> is negative, indicated by the (i-1)th bit of |q> being 0, add D back
         # to P.
         circ.x(q[i-1])
-        cadd(circ, q[i-1], d, p, 2*n)
+        cadd(circ, q[i-1], d, p, 2*n - 1)
         circ.x(q[i-1])
 
 ################################################################################

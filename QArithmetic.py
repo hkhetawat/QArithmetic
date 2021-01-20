@@ -42,17 +42,33 @@ def rshift(circ, a, n):
         circ.swap(a[i],a[i+1])
 
 ################################################################################
-# Controlled-Toffoli, or Controlled-Controlled-Controlled-NOT
+# Multiple-Controlled-NOT
 ################################################################################
 
-# Define a controlled Toffoli gate
-def cccx(circ,ctrl,a,b,c):
-    anc = QuantumRegister(1)
-    circ.add_register(anc[0])
-    circ.ccx(ctrl,a,anc[0])
-    circ.ccx(b,anc[0],c)
-    circ.ccx(ctrl,a,anc[0])
-    circ.ccx(b,anc[0],c)
+# Variable length Toffoli gate
+# REF: https://github.com/qiskit-community/qiskit-community-tutorials/blob/master/terra/qis_adv/quantum_walk.ipynb
+def cnx(qc, *qubits):
+    if len(qubits) >= 3:
+        last = qubits[-1]
+        # A matrix: (made up of a  and Y rotation, lemma4.3)
+        qc.crz(pi/2, qubits[-2], qubits[-1])
+        qc.cu3(pi/2, 0, 0, qubits[-2],qubits[-1])
+        
+        # Control not gate
+        cnx(qc,*qubits[:-2],qubits[-1])
+        
+        # B matrix (pposite angle)
+        qc.cu3(-pi/2, 0, 0, qubits[-2], qubits[-1])
+        
+        # Control
+        cnx(qc,*qubits[:-2],qubits[-1])
+        
+        # C matrix (final rotation)
+        qc.crz(-pi/2,qubits[-2],qubits[-1])
+    elif len(qubits)==3:
+        qc.ccx(*qubits)
+    elif len(qubits)==2:
+        qc.cx(*qubits)
 
 ################################################################################
 # Addition Circuits

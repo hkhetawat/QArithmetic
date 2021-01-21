@@ -259,10 +259,10 @@ def sub_ripple_ex(circ, a, b, s, n):
 # Controlled operations
 
 # Take a subset of a quantum register from index x to y, inclusive.
-def sub_qr(qr, x, y):
+def sub_qr(qr, x, y): # may also be able to use qbit_argument_conversion
     sub = []
     for i in range (x, y+1):
-        sub = sub + [(qr[i])] # I think this was supposed to point to specific qubits
+        sub = sub + [(qr[i])]
     return sub
 
 def full_qr(qr):
@@ -325,6 +325,25 @@ def div(circ, p, d, q, n):
 ################################################################################
 # Expontential Circuit
 ################################################################################
+
+# square that takes |a>
+# |a> is length 2n and has n zeros on the right: d_2n ... d_{n+1) 0 ... 0.
+def square(circ, a, n=-1):
+    if n == -1:
+        n = len(a) // 2
+    anc = AncillaRegister(n)
+    circ.add_register(anc)
+
+    for i in range(0,n):
+        circ.cx(a[i], anc[i])
+    
+    c_lshift(circ, anc[1], a)
+
+    circ.cx(anc[0], anc[1])
+    circ.x(anc[1])
+
+    c_lshift(circ, anc[1], a)
+    c_lshift(circ, anc[1], a)
 
 # a has length n
 # b has length v

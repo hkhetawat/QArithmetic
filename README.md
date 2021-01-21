@@ -8,19 +8,6 @@ List of operations implemented:
 
 ## Bit-wise operations
 
-#### Controlled Toffoli gate (qc,ctrl,a,b,c)
-
-    qc->quantum circuit, ctrl->control bit, a->toffoli control input1, b->toffoli control input2, c->target qubit
-
-
-> *Source*: [O. Scott, Nathan & Dueck, G.W.. (2008). Pairwise decomposition of toffoli gates in a quantum circuit. 231-236. 10.1145/1366110.1366168](https://www.researchgate.net/publication/220904774_Pairwise_decomposition_of_toffoli_gates_in_a_quantum_circuit). 
-
-#### Multiple Controlled Not gate (qc,ctrl,a...n, z)
-
-    qc->quantum circuit, ctrl->control bit, a->toffoli control input ... n->toffoli control input, z->target qubit
-
-
-> *Source*: [Barenco, Adriano and Bennett, Charles H. and Cleve, Richard and DiVincenzo, David P. and Margolus, Norman and Shor, Peter and Sleator, Tycho and Smolin, John A. and Weinfurter, Harald. (1995). Elementary gates for quantum computation. 3457–3467. 10.1103/physreva.52.3457](http://dx.doi.org/10.1103/PhysRevA.52.3457). 
 #### Logical AND (qc, a, b, c, N)
 
     qc->quantum circuit, a->input1, b->input2, c->output, N->bit-string length

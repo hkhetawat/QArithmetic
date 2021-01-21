@@ -29,17 +29,47 @@ def bitwise_not(qc, a, c, N):
 
 # Cyclically left-shifts a binary string "a" of length n.
 # If "a" is zero-padded, equivalent to multiplying "a" by 2.
-def lshift(circ, a, n):
+def lshift(circ, a, n=-1):
+    # Init n if it was not
+    if n == -1:
+        n = len(a)
+
     # Iterate through pairs and do swaps.
     for i in range(n,1,-1):
         circ.swap(a[i-1],a[i-2])
 
+# Cyclically left-shifts a binary string "a" of length n, controlled by c.
+# If "a" is zero-padded, equivalent to multiplying "a" by 2, if and only if c.
+def c_lshift(circ, c, a, n=-1):
+    # Init n if it was not
+    if n == -1:
+        n = len(a)
+
+    # Iterate through pairs and do swaps.
+    for i in range(n,1,-1):
+        circ.cswap(c, a[i-1],a[i-2])
+
 # Cyclically right-shifts a binary string "a" of length n.
 # If "a" is zero-padded, equivalent to dividing "a" by 2.
-def rshift(circ, a, n):
+def rshift(circ, a, n=-1):
+    # Init n if it was not
+    if n == -1:
+        n = len(a)
+
     # Iterate through pairs and do swaps.
     for i in range(n-1):
         circ.swap(a[i],a[i+1])
+
+# Cyclically right-shifts a binary string "a" of length n, controlled by c.
+# If "a" is zero-padded, equivalent to dividing "a" by 2, if and only if c.
+def c_rshift(circ, c, a, n=-1):
+    # Init n if it was not
+    if n == -1:
+        n = len(a)
+    
+    # Iterate through pairs and do swaps.
+    for i in range(n,1,-1):
+        circ.cswap(c, a[i-1],a[i-2])
 
 ################################################################################
 # Addition Circuits

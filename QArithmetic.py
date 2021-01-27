@@ -1,6 +1,7 @@
 from math import pi
 from qiskit import QuantumRegister, QuantumCircuit, AncillaRegister
 from qft import qft, iqft, cqft, ciqft, ccu1
+from qiskit.circuit.library import SXdgGate
 
 ################################################################################
 # Bitwise Operators
@@ -71,6 +72,34 @@ def c_rshift(circ, c, a, n=-1):
     for i in range(n,1,-1):
         circ.cswap(c, a[i-1],a[i-2])
 
+def fourier_doubler(circ, a):
+    circ.h(a[0])
+    circ.h(a[1])
+    circ.append(SXdgGate().control(1), [a[0], a[1]])
+
+    circ.cp(pi/2, a[1], a[2])
+    circ.cp(-pi/4,a[0], a[2])
+
+    circ.csx(a[0], a[1])
+    circ.h(a[1])
+    circ.h(a[2])
+
+    circ.cz(a[2], a[1])
+    circ.h(a[2])
+    circ.cp(pi/4, a[0], a[2])
+    circ.cp(pi/4, a[0], a[2])
+    circ.cp(pi/2, a[0], a[1])
+    circ.h(a[0])
+
+    circ.h(a[1])
+    circ.cz(a[1], a[0])
+    circ.h(a[1])
+
+    circ.h(a[0])
+    circ.cp(-pi/2, a[0], a[1])
+    circ.cp(-3*pi/4, a[0], a[2])
+    circ.h(a[0])
+
 ################################################################################
 # Addition Circuits
 ################################################################################
@@ -106,7 +135,7 @@ def add(circ, a, b, n):
     for i in range(n,0,-1):
         # Iterate through the controls.
         for j in range(i,0,-1):
-            # If the qubit a[j-1] exists run ccu, if not assume the qubit is 0 and never existed
+            # If the qubit a[j-1] exists run cu1, if not assume the qubit is 0 and never existed
             if len(a) - 1 >= j - 1:
                 circ.cu1(2*pi/2**(i-j+1), a[j-1], b[i-1])
 

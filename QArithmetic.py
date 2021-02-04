@@ -327,24 +327,42 @@ def div(circ, p, d, q, n):
 # Expontential Circuit
 ################################################################################
 
-# square that takes |a>
-# |a> is length 2n and has n zeros on the right: d_2n ... d_{n+1) 0 ... 0.
-def square(circ, a, n=-1):
+# square that takes |a> |b>
+# |a> is length n and is a unsigned integer
+# |b> is length 2n and has 2n zeros, after execution b = a^2
+def square(circ, a, b, n=-1):
     if n == -1:
-        n = len(a) // 2
-    anc = AncillaRegister(n)
-    circ.add_register(anc)
-
-    for i in range(0,n):
-        circ.cx(a[i], anc[i])
+        n = len(a)
     
-    c_lshift(circ, anc[1], a)
+    # First Addition
+    circ.cx(a[0], b[0])
+    for i in range(1, n):
+        circ.ccx(a[0], a[i], b[i])
+    
+    # Custom Addition Circuit For Each Qubit of A
+    for k in range(1, n):
+        # modifying qubits
+        d = b[k:n+k+1]
+        qft(circ, d, n+1) #Technically the first few QFT could be refactored to use less gates due to guaranteed controls
 
-    circ.cx(anc[0], anc[1])
-    circ.x(anc[1])
+        # Compute controlled-phases.
+        # Iterate through the targets.
+        for i in range(n+1,0,-1):
+            # Iterate through the controls.
+            for j in range(i,0,-1):
+                if len(a) - 1 < j - 1:
+                    pass # skip over non existent qubits
+                elif k == j - 1: # Cannot control twice
+                    circ.cu1(2*pi/2**(i-j+1), a[j-1], d[i-1])
+                else:
+                    ccu1(circ, 2*pi/2**(i-j+1), a[k], a[j-1], d[i-1])
+        
+        iqft(circ, d, n+1)
+                
 
-    c_lshift(circ, anc[1], a)
-    c_lshift(circ, anc[1], a)
+
+
+
 
 # a has length n
 # b has length v

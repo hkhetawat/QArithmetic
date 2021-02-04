@@ -66,6 +66,12 @@ Uses the ripple-carry adder and the fact that
 
 > *Source*: [Khosropour, A., Aghababa, H., & Forouzandeh, B. (2011). Quantum Division Circuit Based on Restoring Division Algorithm. 2011 Eighth International Conference on Information Technology: New Generations. doi:10.1109/itng.2011.177](https://www.researchgate.net/publication/220840968_Quantum_Division_Circuit_Based_on_Restoring_Division_Algorithm)
 
+#### Square (qc, a, b)
+
+Uses a custom implementation of QFT-based controlled adder
+
+  a ^ 2 = a\*2<sup>0</sup> + a\*2<sup>1</sup> + .... + a\*2<sup>n-2</sup> + a\*2<sup>n-1</sup>
+
 #### Power (qc, a, b, c)
 
 Uses the QFT-adder based cmult and the fact that

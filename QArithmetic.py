@@ -1,6 +1,7 @@
 from math import pi
 from qiskit import QuantumRegister, QuantumCircuit, AncillaRegister
 from qft import qft, iqft, cqft, ciqft, ccu1
+from qiskit.circuit.library import SXdgGate
 
 ################################################################################
 # Bitwise Operators
@@ -29,46 +30,47 @@ def bitwise_not(qc, a, c, N):
 
 # Cyclically left-shifts a binary string "a" of length n.
 # If "a" is zero-padded, equivalent to multiplying "a" by 2.
-def lshift(circ, a, n):
+def lshift(circ, a, n=-1):
+    # Init n if it was not
+    if n == -1:
+        n = len(a)
+
     # Iterate through pairs and do swaps.
     for i in range(n,1,-1):
         circ.swap(a[i-1],a[i-2])
 
+# Cyclically left-shifts a binary string "a" of length n, controlled by c.
+# If "a" is zero-padded, equivalent to multiplying "a" by 2, if and only if c.
+def c_lshift(circ, c, a, n=-1):
+    # Init n if it was not
+    if n == -1:
+        n = len(a)
+
+    # Iterate through pairs and do swaps.
+    for i in range(n,1,-1):
+        circ.cswap(c, a[i-1],a[i-2])
+
 # Cyclically right-shifts a binary string "a" of length n.
 # If "a" is zero-padded, equivalent to dividing "a" by 2.
-def rshift(circ, a, n):
+def rshift(circ, a, n=-1):
+    # Init n if it was not
+    if n == -1:
+        n = len(a)
+
     # Iterate through pairs and do swaps.
     for i in range(n-1):
         circ.swap(a[i],a[i+1])
 
-################################################################################
-# Multiple-Controlled-NOT
-################################################################################
-
-# Variable length Toffoli gate
-# REF: https://github.com/qiskit-community/qiskit-community-tutorials/blob/master/terra/qis_adv/quantum_walk.ipynb
-def cnx(qc, *qubits):
-    if len(qubits) >= 3:
-        last = qubits[-1]
-        # A matrix: (made up of a  and Y rotation, lemma4.3)
-        qc.crz(pi/2, qubits[-2], qubits[-1])
-        qc.cu3(pi/2, 0, 0, qubits[-2],qubits[-1])
-        
-        # Control not gate
-        cnx(qc,*qubits[:-2],qubits[-1])
-        
-        # B matrix (pposite angle)
-        qc.cu3(-pi/2, 0, 0, qubits[-2], qubits[-1])
-        
-        # Control
-        cnx(qc,*qubits[:-2],qubits[-1])
-        
-        # C matrix (final rotation)
-        qc.crz(-pi/2,qubits[-2],qubits[-1])
-    elif len(qubits)==3:
-        qc.ccx(*qubits)
-    elif len(qubits)==2:
-        qc.cx(*qubits)
+# Cyclically right-shifts a binary string "a" of length n, controlled by c.
+# If "a" is zero-padded, equivalent to dividing "a" by 2, if and only if c.
+def c_rshift(circ, c, a, n=-1):
+    # Init n if it was not
+    if n == -1:
+        n = len(a)
+    
+    # Iterate through pairs and do swaps.
+    for i in range(n,1,-1):
+        circ.cswap(c, a[i-1],a[i-2])
 
 ################################################################################
 # Addition Circuits
@@ -105,7 +107,7 @@ def add(circ, a, b, n):
     for i in range(n,0,-1):
         # Iterate through the controls.
         for j in range(i,0,-1):
-            # If the qubit a[j-1] exists run ccu, if not assume the qubit is 0 and never existed
+            # If the qubit a[j-1] exists run cu1, if not assume the qubit is 0 and never existed
             if len(a) - 1 >= j - 1:
                 circ.cu1(2*pi/2**(i-j+1), a[j-1], b[i-1])
 
@@ -258,10 +260,10 @@ def sub_ripple_ex(circ, a, b, s, n):
 # Controlled operations
 
 # Take a subset of a quantum register from index x to y, inclusive.
-def sub_qr(qr, x, y):
+def sub_qr(qr, x, y): # may also be able to use qbit_argument_conversion
     sub = []
     for i in range (x, y+1):
-        sub = sub + [(qr[i])] # I think this was supposed to point to specific qubits
+        sub = sub + [(qr[i])]
     return sub
 
 def full_qr(qr):
@@ -324,6 +326,43 @@ def div(circ, p, d, q, n):
 ################################################################################
 # Expontential Circuit
 ################################################################################
+
+# square that takes |a> |b>
+# |a> is length n and is a unsigned integer
+# |b> is length 2n and has 2n zeros, after execution b = a^2
+def square(circ, a, b, n=-1):
+    if n == -1:
+        n = len(a)
+    
+    # First Addition
+    circ.cx(a[0], b[0])
+    for i in range(1, n):
+        circ.ccx(a[0], a[i], b[i])
+    
+    # Custom Addition Circuit For Each Qubit of A
+    for k in range(1, n):
+        # modifying qubits
+        d = b[k:n+k+1]
+        qft(circ, d, n+1) #Technically the first few QFT could be refactored to use less gates due to guaranteed controls
+
+        # Compute controlled-phases.
+        # Iterate through the targets.
+        for i in range(n+1,0,-1):
+            # Iterate through the controls.
+            for j in range(i,0,-1):
+                if len(a) - 1 < j - 1:
+                    pass # skip over non existent qubits
+                elif k == j - 1: # Cannot control twice
+                    circ.cu1(2*pi/2**(i-j+1), a[j-1], d[i-1])
+                else:
+                    ccu1(circ, 2*pi/2**(i-j+1), a[k], a[j-1], d[i-1])
+        
+        iqft(circ, d, n+1)
+                
+
+
+
+
 
 # a has length n
 # b has length v

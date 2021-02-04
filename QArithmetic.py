@@ -72,34 +72,6 @@ def c_rshift(circ, c, a, n=-1):
     for i in range(n,1,-1):
         circ.cswap(c, a[i-1],a[i-2])
 
-def fourier_doubler(circ, a):
-    circ.h(a[0])
-    circ.h(a[1])
-    circ.append(SXdgGate().control(1), [a[0], a[1]])
-
-    circ.cp(pi/2, a[1], a[2])
-    circ.cp(-pi/4,a[0], a[2])
-
-    circ.csx(a[0], a[1])
-    circ.h(a[1])
-    circ.h(a[2])
-
-    circ.cz(a[2], a[1])
-    circ.h(a[2])
-    circ.cp(pi/4, a[0], a[2])
-    circ.cp(pi/4, a[0], a[2])
-    circ.cp(pi/2, a[0], a[1])
-    circ.h(a[0])
-
-    circ.h(a[1])
-    circ.cz(a[1], a[0])
-    circ.h(a[1])
-
-    circ.h(a[0])
-    circ.cp(-pi/2, a[0], a[1])
-    circ.cp(-3*pi/4, a[0], a[2])
-    circ.h(a[0])
-
 ################################################################################
 # Addition Circuits
 ################################################################################
